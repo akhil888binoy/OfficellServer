@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn OAuth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #0077b5;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover {
+            background-color: #006097;
+        }
+        pre {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 4px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LinkedIn OAuth 2.0 Test</h1>
+        
+        <div class="section">
+            <h2>Step 1: Authenticate with LinkedIn</h2>
+            <p>Click the button below to start the OAuth flow. You'll be redirected to LinkedIn to authorize this application.</p>
+            <button id="authButton">Login with LinkedIn</button>
+        </div>
+        
+        <div id="callbackSection" class="section hidden">
+            <h2>Step 2: Callback Received</h2>
+            <p>The authorization code has been received and exchanged for an access token.</p>
+            <div>
+                <h3>Access Token:</h3>
+                <pre id="accessToken"></pre>
+            </div>
+            <button id="profileButton">Get User Profile</button>
+        </div>
+        
+        <div id="profileSection" class="section hidden">
+            <h2>Step 3: User Profile Data</h2>
+            <p>Profile data retrieved using the access token:</p>
+            <pre id="profileData"></pre>
+        </div>
+        
+        <div id="errorSection" class="section hidden" style="background-color: #ffebee;">
+            <h2>Error</h2>
+            <pre id="errorMessage"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const authButton = document.getElementById('authButton');
+            const profileButton = document.getElementById('profileButton');
+            const callbackSection = document.getElementById('callbackSection');
+            const profileSection = document.getElementById('profileSection');
+            const errorSection = document.getElementById('errorSection');
+            const accessTokenDisplay = document.getElementById('accessToken');
+            const profileDataDisplay = document.getElementById('profileData');
+            const errorDisplay = document.getElementById('errorMessage');
+            
+            let accessToken = '';
+            
+            // Check URL for authorization code (callback from LinkedIn)
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            if (error) {
+                showError(`Error from LinkedIn: ${error}\nDescription: ${urlParams.get('error_description')}`);
+            } else if (code) {
+                // We have an authorization code, exchange it for an access token
+                exchangeCodeForToken(code);
+            }
+            
+            authButton.addEventListener('click', function() {
+                // Initiate LinkedIn OAuth flow
+                window.location.href = 'http://localhost:3000/v1/auth/linkedin';
+            });
+            
+            profileButton.addEventListener('click', function() {
+                if (!accessToken) {
+                    showError('No access token available');
+                    return;
+                }
+                
+                // Get user profile using the access token
+                fetch('http://localhost:3000/v1/auth/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    profileDataDisplay.textContent = JSON.stringify(data, null, 2);
+                    profileSection.classList.remove('hidden');
+                })
+                .catch(err => {
+                    showError(err.message);
+                });
+            });
+            
+            function exchangeCodeForToken(code) {
+                fetch(`http://localhost:3000/v1/auth/linkedin/callback?code=${code}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.accessToken) {
+                        accessToken = data.accessToken;
+                        accessTokenDisplay.textContent = accessToken;
+                        callbackSection.classList.remove('hidden');
+                        
+                        // Clean the URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } else {
+                        throw new Error('No access token received');
+                    }
+                })
+                .catch(err => {
+                    showError(err.message);
+                });
+            }
+            
+            function showError(message) {
+                errorDisplay.textContent = message;
+                errorSection.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

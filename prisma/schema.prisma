@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+    previewFeatures = ["fullTextSearchPostgres"]
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int          @id @default(autoincrement())
+  linkedin_id         String       @unique
+  username            String?      @unique
+  email               String       @unique
+  avatar_url          String?
+  verification_status Status       @default(UNVERIFIED)
+  role                Role         @default(USER)
+  vents               Vent[]
+  votes               Vote[]
+  comments            Comment[]
+  reports             Reports[]    @relation("UserReports")
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  SubComment          SubComment[]
+}
+
+model Company {
+  id                Int      @id @default(autoincrement())
+  name              String
+  domain            String?
+  industry          String?
+  city              String? 
+  country           String?
+  vents             Vent[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Vent {
+  id                Int        @id @default(autoincrement())
+  company           Company    @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  company_id        Int
+  author            User       @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author_id         Int
+  no_pii            Boolean
+  verified_employee Boolean
+  content           String
+  upvote            Int        @default(0)
+  downvote          Int        @default(0)
+  comments          Comment[]
+  category          String 
+  votes             Vote[]
+  reports           Reports[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  Media             Media[]
+}
+
+
+
+model Vote {
+  id        Int      @id @default(autoincrement())
+  vent      Vent     @relation(fields: [vent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vent_id   Int
+  user      User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user_id   Int
+  vote      VoteType  @default(NOVOTE)
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id          Int          @id @default(autoincrement())
+  vent        Vent         @relation(fields: [vent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vent_id     Int
+  author      User         @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author_id   Int
+  comment     String
+  subcomments SubComment[]
+  createdAt   DateTime     @default(now())
+}
+
+model SubComment {
+  id         Int      @id @default(autoincrement())
+  comment    Comment  @relation(fields: [comment_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  comment_id Int
+  author     User     @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  author_id  Int
+  subcomment String
+  createdAt  DateTime @default(now())
+}
+
+model Reports {
+  id          Int          @id @default(autoincrement())
+  vent        Vent         @relation(fields: [vent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vent_id     Int
+  reporter    User         @relation("UserReports", fields: [reporter_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  reporter_id Int
+  report      String
+  category    String
+  status      ReportStatus @default(PENDING)
+}
+
+model Media {
+  id        Int       @id @default(autoincrement())
+  vent      Vent      @relation(fields: [vent_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vent_id   Int
+  type      MediaType
+  url       String
+  createdAt DateTime  @default(now())
+}
+
+enum VoteType{
+  UPVOTE
+  DOWNVOTE
+  NOVOTE
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+}
+
+enum Status {
+  VERIFIED
+  PENDING
+  UNVERIFIED
+}
+
+enum Role {
+  USER
+  ADMIN
+}
