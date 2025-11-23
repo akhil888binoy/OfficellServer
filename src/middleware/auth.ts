@@ -8,7 +8,7 @@ export interface MyPayload extends JwtPayload {
 
 export const auth = async (req: Request | any , res: Response, next: NextFunction) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        const token = req.cookies.Auth; 
         if (!token) {
             throw new Error();
         }
