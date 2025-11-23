@@ -70,13 +70,18 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
 
         res.cookie('Auth', token , {
             maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
+            secure: true,           
+            sameSite: "none", 
         });
         res.cookie('RefreshExist' , true , {
-            maxAge: 24 * 60 * 60 * 1000 // 24 hour
+            maxAge: 24 * 60 * 60 * 1000, // 24 hour
+            secure: true,           
+            sameSite: "none",
         });
         res.cookie('refreshToken', refreshToken , {
             httpOnly: true,
-            sameSite: true,
+            secure: true,           
+            sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000 // 24 hour
         });
         res.redirect(`${process.env.FRONTEND_URL}/username`); 
@@ -93,14 +98,19 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
 
         res.cookie('Auth', token, {
                 maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
+                secure: true,           
+                sameSite: "none",
         });
         res.cookie('RefreshExist' , true , {
-            maxAge: 24 * 60 * 60 * 1000 // 24 hour
+            maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
+            secure: true,           
+            sameSite: "none",
         });
         res.cookie('refreshToken', refreshToken , { 
             httpOnly: true,
-            sameSite: true,
-            maxAge: 24 * 60 * 60 * 1000 // 24 hour
+            maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
+            secure: true,           
+            sameSite: "none",
         });
         res.redirect(`${process.env.FRONTEND_URL}/feed`);
     }
@@ -125,7 +135,9 @@ export const RefreshToken = async( req: Request , res: Response)=>{
     });
 
     res.cookie('Auth', token, {
-        maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
+        maxAge: 1 * 60 * 60 * 1000, // 60 minutes  
+        secure: true,           
+        sameSite: "none", 
     });
 
         return res.status(200).send("Token refreshed");
