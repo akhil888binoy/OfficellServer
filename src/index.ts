@@ -45,10 +45,11 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" } 
 }));
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
+  origin: process.env.FRONTEND_URL,   
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
 }));
-console.log(process.env.FRONTEND_URL);
 app.use(express.static('src/public/'));
 app.get("/", (req ,res )=>{
     res.status(200).json({message : "Officell Server Running Successfully"});
