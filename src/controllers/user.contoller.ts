@@ -64,6 +64,7 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
         await redis.set(`Profile:${add_user.id}`, JSON.stringify(add_user));
         await redis.expire(`Profile:${add_user.id}` , 3600);
         console.log("TOKEN", token);
+        console.log("REFRESHTOKEN", refreshToken);
         res.cookie('Auth', token , {
             maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
             httpOnly: true,           
@@ -87,6 +88,7 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
         await redis.set(`Profile:${user?.id}`, JSON.stringify(user));
         await redis.expire(`Profile:${user?.id}` , 3600);
         console.log("TOKEN", token);
+        console.log("REFRESHTOKEN", refreshToken);
         res.cookie('Auth', token, {
                 maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
                 httpOnly: true,          
