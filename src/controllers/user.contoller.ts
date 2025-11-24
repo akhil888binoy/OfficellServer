@@ -133,9 +133,7 @@ export const RefreshToken = async( req: Request , res: Response)=>{
         httpOnly: true,         
         
     });
-
-        return res.status(200).send("Token refreshed");
-
+    return res.status(200).send("Token refreshed");
     } catch (error) {
         return res.status(400).send('Invalid refresh token.');
     }
@@ -146,6 +144,7 @@ export const getUserProfile = async (req: Request | any  , res : Response ) => {
     const { _id } = req.decoded;
     const redis = await redisConnection();
     const ip = req.ip;
+    console.log("IPADDR", ip)
     const location = geoip.lookup(ip);
     try {
         const user = await prisma.user.findUnique({
