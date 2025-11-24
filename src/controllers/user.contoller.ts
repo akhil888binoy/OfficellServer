@@ -20,9 +20,7 @@ export const authLinkedin = (req: Request , res : Response )=>{
 
 export const authLinkedinCallback = async (req: Request , res : Response )=>{
     const code = req.query.code;
-
     const redis = await redisConnection();
-
     try {
 
     const tokenResponse = await axios.post('https://www.linkedin.com/oauth/v2/accessToken', null, {
@@ -36,7 +34,6 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
     });
 
     const accessToken = tokenResponse?.data.access_token;
-
 
     const profileResponse: any  = await axios.get('https://api.linkedin.com/v2/userinfo', {
         headers: {
@@ -61,7 +58,6 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
                 expiresIn: '1h',
         });
         const refreshToken = jwt.sign({ _id: add_user.id }, process.env.SECRET_KEY  as jwt.Secret , {
-        
             expiresIn :'1d'
         });
 
@@ -70,22 +66,18 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
 
         res.cookie('Auth', token , {
             maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
-            secure: true,
             httpOnly: true,           
-            sameSite: "none", 
+            
         });
         res.cookie('RefreshExist' , true , {
             maxAge: 24 * 60 * 60 * 1000, // 24 hour
-            secure: true,           
         });
         res.cookie('refreshToken', refreshToken , {
             httpOnly: true,
-            secure: true,           
-            sameSite: "none",
+           
             maxAge: 24 * 60 * 60 * 1000 // 24 hour
         });
         res.redirect(`${process.env.FRONTEND_URL}/username`); 
-
     }else{
         const token = jwt.sign({_id : user?.id}, process.env.SECRET_KEY as jwt.Secret, {
             expiresIn: '1h',
@@ -98,19 +90,16 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
 
         res.cookie('Auth', token, {
                 maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
-                secure: true, 
                 httpOnly: true,          
-                sameSite: "none",
+               
         });
         res.cookie('RefreshExist' , true , {
             maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
-            secure: true,           
         });
         res.cookie('refreshToken', refreshToken , { 
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
-            secure: true,           
-            sameSite: "none",
+           
         });
         res.redirect(`${process.env.FRONTEND_URL}/feed`);
     }
@@ -136,9 +125,9 @@ export const RefreshToken = async( req: Request , res: Response)=>{
 
     res.cookie('Auth', token, {
         maxAge: 1 * 60 * 60 * 1000, // 60 minutes  
-        secure: true,  
+          
         httpOnly: true,         
-        sameSite: "none", 
+        
     });
 
         return res.status(200).send("Token refreshed");
