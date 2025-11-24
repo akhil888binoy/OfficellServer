@@ -48,6 +48,7 @@ app.use(cors({
     origin: process.env.FRONTEND_URL,
     credentials: true
 }));
+console.log(process.env.FRONTEND_URL);
 app.use(express.static('src/public/'));
 app.get("/", (req ,res )=>{
     res.status(200).json({message : "Officell Server Running Successfully"});
