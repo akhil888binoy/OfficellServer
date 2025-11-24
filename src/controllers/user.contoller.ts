@@ -150,18 +150,15 @@ export const getUserProfile = async (req: Request | any  , res : Response ) => {
         const user = await prisma.user.findUnique({
             where:{id : _id}
         });
-
         if (user !== null){
 
             await redis.set(`Profile:${_id}`, JSON.stringify(user));
             await redis.expire(`Profile:${_id}`, 3600);
-
             res.status(200).json({
                 message : "Get Profile Successfull",
                 user : user,
                 location: location
             }); 
-
         }else{
                 res.status(401).json({
                 message : "User doesn't exist",
