@@ -67,15 +67,17 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
         console.log("REFRESHTOKEN", refreshToken);
         res.cookie('Auth', token , {
             maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
-            httpOnly: true,           
-            
+            httpOnly: true,   
+            domain: process.env.DOMAIN,        
         });
         res.cookie('RefreshExist' , true , {
             maxAge: 24 * 60 * 60 * 1000, // 24 hour
+            domain: process.env.DOMAIN,        
         });
         res.cookie('refreshToken', refreshToken , {
             httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000 // 24 hour
+            maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
+            domain: process.env.DOMAIN       
         });
         res.redirect(`${process.env.FRONTEND_URL}/username`); 
     }else{
@@ -91,14 +93,17 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
         console.log("REFRESHTOKEN", refreshToken);
         res.cookie('Auth', token, {
                 maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
-                httpOnly: true,          
+                httpOnly: true, 
+                domain: process.env.DOMAIN,        
         });
         res.cookie('RefreshExist' , true , {
             maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
+            domain: process.env.DOMAIN,        
         });
         res.cookie('refreshToken', refreshToken , { 
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
+                domain: process.env.DOMAIN,        
         });
         res.redirect(`${process.env.FRONTEND_URL}/feed`);
     }
@@ -124,7 +129,7 @@ export const RefreshToken = async( req: Request , res: Response)=>{
 
     res.cookie('Auth', token, {
         maxAge: 1 * 60 * 60 * 1000, // 60 minutes  
-          
+        domain: process.env.DOMAIN,        
         httpOnly: true,         
         
     });

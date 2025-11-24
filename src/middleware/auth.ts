@@ -27,8 +27,7 @@ export const auth = async (req: Request | any , res: Response, next: NextFunctio
             });
             res.cookie('Auth', token, {
                 maxAge: 1 * 60 * 60 * 1000, // 60 minutes  
-                 
-               
+                        domain: process.env.DOMAIN,        
             }); 
             const decodedtoken = jwt.verify(token, process.env.SECRET_KEY  as jwt.Secret);
             req.decoded = decodedtoken; 
