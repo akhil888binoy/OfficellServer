@@ -45,10 +45,8 @@ app.use(helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" } 
 }));
 app.use(cors({
-  origin: process.env.FRONTEND_URL,   
-  credentials: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
-  methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: process.env.FRONTEND_URL,
+    credentials: true
 }));
 app.use(express.static('src/public/'));
 app.get("/", (req ,res )=>{
