@@ -70,7 +70,8 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
 
         res.cookie('Auth', token , {
             maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
-            secure: true,           
+            secure: true,
+            httpOnly: true,           
             sameSite: "none", 
         });
         res.cookie('RefreshExist' , true , {
@@ -97,7 +98,8 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
 
         res.cookie('Auth', token, {
                 maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
-                secure: true,           
+                secure: true, 
+                httpOnly: true,          
                 sameSite: "none",
         });
         res.cookie('RefreshExist' , true , {
@@ -134,7 +136,8 @@ export const RefreshToken = async( req: Request , res: Response)=>{
 
     res.cookie('Auth', token, {
         maxAge: 1 * 60 * 60 * 1000, // 60 minutes  
-        secure: true,           
+        secure: true,  
+        httpOnly: true,         
         sameSite: "none", 
     });
 

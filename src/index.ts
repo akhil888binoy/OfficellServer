@@ -36,7 +36,7 @@ export const client = createClient({
     });
 export const userBloomfilter = new BloomFilter(1000000,4);
 export const companyBloomfilter = new BloomFilter(1000000,4);
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('combined'));
