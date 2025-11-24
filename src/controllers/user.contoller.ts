@@ -63,7 +63,7 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
 
         await redis.set(`Profile:${add_user.id}`, JSON.stringify(add_user));
         await redis.expire(`Profile:${add_user.id}` , 3600);
-
+        console.log("TOKEN", token);
         res.cookie('Auth', token , {
             maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
             httpOnly: true,           
@@ -74,7 +74,6 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
         });
         res.cookie('refreshToken', refreshToken , {
             httpOnly: true,
-           
             maxAge: 24 * 60 * 60 * 1000 // 24 hour
         });
         res.redirect(`${process.env.FRONTEND_URL}/username`); 
@@ -87,11 +86,10 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
         });
         await redis.set(`Profile:${user?.id}`, JSON.stringify(user));
         await redis.expire(`Profile:${user?.id}` , 3600);
-
+        console.log("TOKEN", token);
         res.cookie('Auth', token, {
                 maxAge: 1 * 60 * 60 * 1000, // 60 minutes   
                 httpOnly: true,          
-               
         });
         res.cookie('RefreshExist' , true , {
             maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
@@ -99,7 +97,6 @@ export const authLinkedinCallback = async (req: Request , res : Response )=>{
         res.cookie('refreshToken', refreshToken , { 
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000 ,// 24 hour
-           
         });
         res.redirect(`${process.env.FRONTEND_URL}/feed`);
     }
