@@ -12,7 +12,7 @@ export const getCompaniesCount = async (req: Request , res: Response)=>{
         const count_companies = await prisma.company.count({
             where: { 
                 createdAt : {
-                    gte: String(lastcreatedAt)
+                    gt: String(lastcreatedAt)
                 }
             }
         });

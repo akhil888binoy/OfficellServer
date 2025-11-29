@@ -12,7 +12,7 @@ export const getVentsCount = async (req: Request , res: Response)=>{
         const count_vents = await prisma.vent.count({
             where: { 
                 createdAt : {
-                    gte: String(lastcreatedAt)
+                    gt: String(lastcreatedAt)
                 }
             }
         });
