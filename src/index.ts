@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
@@ -18,8 +17,9 @@ import { v2 as cloudinary } from 'cloudinary';
 import { BloomFilter } from 'bloom-filters';
 import { limitRequests, verifyWriteOrigin } from './middleware/requestProtection';
 import { validateProductionConfig } from './config/production';
+import { loadEnvironment } from './config/environment';
 
-dotenv.config();
+loadEnvironment();
 validateProductionConfig();
 cloudinary.config({ 
     cloud_name: process.env.CLOUD_NAME,
