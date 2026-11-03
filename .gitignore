@@ -3,6 +3,8 @@ node_modules
 .env
 .env.production
 .env.*.local
+OfficellServer.env
+officellserver.env
 .DS_Store
 dist
 /src/generated/prisma
