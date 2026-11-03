@@ -6,10 +6,15 @@
   "scripts": {
   "dev": "nodemon src/index.ts",
   "build": "tsc",
+    "seed:demo": "ts-node prisma/seed-demo.ts",
+    "seed:demo:clean": "ts-node prisma/seed-demo.ts --clean",
+    "companies:map:backfill": "ts-node prisma/backfill-company-map.ts",
+    "companies:mnc:backfill": "ts-node prisma/backfill-mnc-country-map.ts",
+    "test:privacy": "npm run build && node --test test/*.test.cjs",
   "start": "node dist/index.js"
 },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed-demo.ts"
   },
   "keywords": [],
   "author": "",

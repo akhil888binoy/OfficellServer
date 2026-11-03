@@ -1,0 +1,2 @@
+ALTER TABLE "Company" ADD COLUMN "description" TEXT;
+ALTER TABLE "Company" ADD COLUMN "isRemote" BOOLEAN NOT NULL DEFAULT false;

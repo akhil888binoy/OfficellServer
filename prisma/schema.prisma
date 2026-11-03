@@ -29,28 +29,62 @@ model User {
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
   SubComment          SubComment[]
+  companyFollows      CompanyFollow[]
+  topicFollows        TopicFollow[]
+  notificationPreference NotificationPreference?
+  notifications       Notification[]
 }
 
 model Company {
   id                Int      @id @default(autoincrement())
   name              String
+  type              CompanyType @default(LOCAL)
   domain            String?
+  logoUrl           String?
+  description       String?
+  isRemote          Boolean  @default(false)
   industry          String?
   city              String? 
+  region            String?
   country           String?
+  mapLat            Float?
+  mapLng            Float?
+  locations         CompanyLocation[]
   vents             Vent[]
+  followers         CompanyFollow[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model CompanyLocation {
+  id        Int     @id @default(autoincrement())
+  companyId Int
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  city      String?
+  country   String
+  mapLat    Float
+  mapLng    Float
+  vents     Vent[]
+
+  @@unique([companyId, city, country])
+}
+
+enum CompanyType {
+  LOCAL
+  MNC
 }
 
 model Vent {
   id                Int        @id @default(autoincrement())
   company           Company    @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   company_id        Int
+  location          CompanyLocation? @relation(fields: [location_id], references: [id], onDelete: SetNull)
+  location_id       Int?
   author            User       @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   author_id         Int
   no_pii            Boolean
   verified_employee Boolean
+  showUsername      Boolean    @default(false)
   content           String
   upvote            Int        @default(0)
   downvote          Int        @default(0)
@@ -61,6 +95,9 @@ model Vent {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   Media             Media[]
+  notifications     Notification[]
+
+  @@index([company_id, location_id, createdAt(sort: Desc)])
 }
 
 
@@ -82,6 +119,7 @@ model Comment {
   author      User         @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   author_id   Int
   comment     String
+  showUsername Boolean @default(false)
   subcomments SubComment[]
   createdAt   DateTime     @default(now())
 }
@@ -93,6 +131,7 @@ model SubComment {
   author     User     @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   author_id  Int
   subcomment String
+  showUsername Boolean @default(false)
   createdAt  DateTime @default(now())
 }
 
@@ -105,6 +144,49 @@ model Reports {
   report      String
   category    String
   status      ReportStatus @default(PENDING)
+}
+
+model CompanyFollow {
+  userId Int
+  companyId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@id([userId, companyId])
+  @@index([companyId])
+}
+
+model TopicFollow {
+  userId Int
+  topic String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@id([userId, topic])
+}
+
+model NotificationPreference {
+  userId Int @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies Boolean @default(false)
+  companyPosts Boolean @default(false)
+}
+
+model Notification {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ventId Int
+  vent Vent @relation(fields: [ventId], references: [id], onDelete: Cascade)
+  kind NotificationKind
+  readAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([userId, readAt, createdAt(sort: Desc)])
+}
+
+enum NotificationKind {
+  POST_REPLY
+  COMMENT_REPLY
+  COMPANY_POST
 }
 
 model Media {

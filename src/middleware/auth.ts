@@ -1,5 +1,6 @@
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { authCookieOptions } from '../config/authCookies';
 
 export interface MyPayload extends JwtPayload {
     _id: number; 
@@ -25,16 +26,12 @@ export const auth = async (req: Request | any , res: Response, next: NextFunctio
             const token = jwt.sign({_id : decoded._id}, process.env.SECRET_KEY  as jwt.Secret , {
                 expiresIn: '1h',
             });
-            res.cookie('Auth', token, {
-                maxAge: 1 * 60 * 60 * 1000, // 60 minutes  
-                domain: process.env.DOMAIN,
-                            }); 
+            res.cookie('Auth', token, authCookieOptions(60 * 60 * 1000));
             const decodedtoken = jwt.verify(token, process.env.SECRET_KEY  as jwt.Secret);
             req.decoded = decodedtoken; 
             next();
         } catch (error) {
-            res.redirect(`${process.env.FRONTEND_URL}/sessionexpired`)
-            return res.status(400).send('Invalid refresh token.');
+            return res.status(401).json({ message: 'Session expired. Please sign in again.' });
             
         }
     }

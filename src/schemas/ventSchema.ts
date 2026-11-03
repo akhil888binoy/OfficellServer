@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import { VENT_TOPICS } from '../utils/ventTopics';
 
 export const reportVentSchema = z.object({
     report : z.string(),
@@ -12,7 +13,6 @@ export const addCommentSchema = z.object({
 
 export const updateVentSchema = z.object({ 
     company_id : z.int().optional(),
-    no_pii : z.boolean().optional(),
-    content : z.string().optional(),
-    category : z.string().optional(),
+    content : z.string().trim().min(1).max(1000).optional(),
+    category : z.enum(VENT_TOPICS).optional(),
 });
